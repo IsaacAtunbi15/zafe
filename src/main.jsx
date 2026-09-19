@@ -20,6 +20,7 @@ const fallbackRecords=[
 ];
 const crafts=['Embroidery','Weaving','Leatherwork','Dyeing','Pottery','Blacksmithing','Cap making'];
 const programme=[['02:00','Arrival / exhibition viewing'],['03:00','Keynote: The work of remembering'],['03:45','ZAFE documentary premiere'],['04:30','Panel: Making identity visible'],['05:15','Heritage fashion presentation']];
+const archiveTypeMap={IMAGE:['IMAGE','PHOTOGRAPH','PHOTO_SERIES'],FILM:['FILM','DOCUMENTARY'],VOICE:['VOICE','INTERVIEW','ORAL_HISTORY','AUDIO'],TEXT:['TEXT','ARTICLE','ESSAY','RESEARCH_NOTE','ARCHIVAL_DOCUMENT'],PEOPLE:['PEOPLE'],PLACE:['PLACE']};
 
 function Node(){return <span className="zafe-node" aria-hidden="true">◇</span>}
 function Header({menu,setMenu}){return <><header className="topbar"><a className="brand" href="/"><span className="mark">Z</span><span>ZAFE<small>ZARIA ART & FASHION EXPO</small></span></a><nav><a href="#edition">2026</a><a href="#archive">Archive</a><a href="#stories">Stories</a><a href="#people">People</a><a href="#about">About</a></nav><div className="head-actions"><a className="signin" href="/desk">Documentation Desk</a><button aria-label="Search"><Search size={17}/></button><button className="menu-btn" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button></div></header>{menu&&<div className="mobile-nav"><a href="#edition">2026</a><a href="#archive">Archive</a><a href="#stories">Stories</a><a href="#people">People</a><a href="/desk">Documentation Desk ↗</a></div>}</>}
@@ -28,7 +29,7 @@ function App(){
  const [menu,setMenu]=useState(false),[auth,setAuth]=useState(false),[records,setRecords]=useState(fallbackRecords),[archiveType,setArchiveType]=useState('ALL'),[archiveQuery,setArchiveQuery]=useState(''),[selected,setSelected]=useState(null);
  useEffect(()=>{if(location.pathname.startsWith('/auth'))setAuth(true);if(!supabase)return;supabase.from('records').select('archive_id,type,title,place:places(name),media(url)').eq('status','PUBLISHED').limit(6).then(({data})=>{if(data?.length)setRecords(data.map((r,i)=>({...r,place:r.place?.name||'Zaria',image:r.media?.[0]?.url||fallbackRecords[i%3].image})))})},[]);
  useEffect(()=>{const targets=document.querySelectorAll('main>section, .sheet-item, .craft-list a');const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}}),{threshold:.14,rootMargin:'0px 0px -7% 0px'});targets.forEach(target=>{target.classList.add('reveal');observer.observe(target)});return()=>observer.disconnect()},[records]);
- const shownRecords=records.filter(r=>(archiveType==='ALL'||r.type===archiveType)&&`${r.title} ${r.archive_id} ${r.place||''} ${r.practice||''}`.toLowerCase().includes(archiveQuery.toLowerCase()));
+ const shownRecords=records.filter(r=>(archiveType==='ALL'||(archiveTypeMap[archiveType]||[archiveType]).includes(r.type))&&`${r.title} ${r.archive_id} ${r.place||''} ${r.practice||''}`.toLowerCase().includes(archiveQuery.toLowerCase()));
  if(location.pathname.startsWith('/desk'))return <DocumentationDesk onExit={()=>{location.href='/'}}/>;
  if(location.pathname.startsWith('/signup'))return <SignupPage/>;
  return <><div className="site"><Header menu={menu} setMenu={setMenu}/><main>
