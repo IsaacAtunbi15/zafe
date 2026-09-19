@@ -1,5 +1,4 @@
--- Public sign-up creates a visitor profile. Administrators promote accounts
--- explicitly after reviewing them.
+-- Every account created through the public signup flow is an administrator.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -8,7 +7,7 @@ set search_path=public
 as $$
 begin
   insert into public.profiles(id,name,role)
-  values(new.id,coalesce(new.raw_user_meta_data->>'name',''),'VISITOR'::public.user_role)
+  values(new.id,coalesce(new.raw_user_meta_data->>'name',''),'ADMIN'::public.user_role)
   on conflict (id) do nothing;
   return new;
 end
