@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+}
+enum Role {
+ VISITOR
+ CONTRIBUTOR
+ RESEARCHER
+ CURATOR
+ ADMIN
+}
+enum RecordStatus {
+ DRAFT
+ IN_REVIEW
+ CHANGES_REQUESTED
+ APPROVED
+ PUBLISHED
+ ARCHIVED
+}
+enum RecordType {
+ PHOTOGRAPH
+ PHOTO_SERIES
+ FILM
+ DOCUMENTARY
+ INTERVIEW
+ ORAL_HISTORY
+ AUDIO
+ ARTICLE
+ ESSAY
+ RESEARCH_NOTE
+ OBJECT
+ CRAFT
+ FASHION_WORK
+ ARCHIVAL_DOCUMENT
+}
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  name String?
+  role Role @default(VISITOR)
+  createdAt DateTime @default(now())
+  records Record[]
+}
+model Edition {
+  id String @id @default(cuid())
+  year Int @unique
+  title String
+  theme String
+  slug String @unique
+  venue String?
+  city String?
+  country String @default("Nigeria")
+  records Record[]
+  programme ProgrammeItem[]
+}
+model Collection {
+ id String @id @default(cuid())
+ title String
+ slug String @unique
+ description String?
+ year Int?
+ records Record[]
+}
+model Person {
+ id String @id @default(cuid())
+ name String
+ slug String @unique
+ role String
+ bio String?
+ location String?
+ records Record[]
+}
+model Place {
+ id String @id @default(cuid())
+ name String
+ slug String @unique
+ description String?
+ locationText String?
+ records Record[]
+}
+model Practice {
+ id String @id @default(cuid())
+ name String
+ slug String @unique
+ description String?
+ records Record[]
+}
+model Record {
+  id String @id @default(cuid())
+  archiveId String @unique
+  title String
+  slug String @unique
+  type RecordType
+  status RecordStatus @default(DRAFT)
+  summary String?
+  description String?
+  language String?
+  rightsStatement String?
+  creditLine String?
+  featured Boolean @default(false)
+  publishedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdById String?
+  createdBy User? @relation(fields: [createdById], references: [id])
+  editionId String?
+  edition Edition? @relation(fields: [editionId], references: [id])
+  collectionId String?
+  collection Collection? @relation(fields: [collectionId], references: [id])
+  personId String?
+  person Person? @relation(fields: [personId], references: [id])
+  placeId String?
+  place Place? @relation(fields: [placeId], references: [id])
+  practiceId String?
+  practice Practice? @relation(fields: [practiceId], references: [id])
+  media Media[]
+  revisions Revision[]
+}
+model Media {
+ id String @id @default(cuid())
+ recordId String
+ record Record @relation(fields: [recordId], references: [id])
+ kind String
+ url String?
+ altText String?
+ caption String?
+ sortOrder Int @default(0)
+}
+model ProgrammeItem {
+ id String @id @default(cuid())
+ editionId String
+ edition Edition @relation(fields: [editionId], references: [id])
+ startTime String
+ endTime String?
+ title String
+ type String?
+ description String?
+ location String?
+ displayOrder Int @default(0)
+}
+model Revision {
+ id String @id @default(cuid())
+ recordId String
+ record Record @relation(fields: [recordId], references: [id])
+ status RecordStatus
+ note String?
+ createdAt DateTime @default(now())
+ createdById String?
+}
