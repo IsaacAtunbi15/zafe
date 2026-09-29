@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {ArrowLeft,ArrowRight,Maximize2,X} from 'lucide-react';
-import {driveImageUrl,fullPhotoArchive} from '../data/driveGallery';
+import {dedupeDriveImages,driveImageUrl,fullPhotoArchive} from '../data/driveGallery';
 
 const categoryOf=({title})=>{
   if(/^ZAFE-CAROUSEL/i.test(title))return 'CAROUSEL';
@@ -17,7 +17,7 @@ export default function GalleryArchive(){
   const [open,setOpen]=useState(null);
   const orderedCarousel=useMemo(()=>assets.filter(({title})=>/^(ZAFE-CAROUSEL|ZAFE |Z\d|C\d)/i.test(title)).sort((a,b)=>a.title.localeCompare(b.title,undefined,{numeric:true})),[assets]);
   const filtered=useMemo(()=>assets.filter(item=>filter==='ALL'||categoryOf(item)===filter),[filter,assets]);
-  useEffect(()=>{fetch('/.netlify/functions/drive-gallery').then(response=>response.ok?response.json():null).then(data=>{if(data?.files?.length)setAssets(data.files)}).catch(()=>{})},[]);
+  useEffect(()=>{fetch('/.netlify/functions/drive-gallery').then(response=>response.ok?response.json():null).then(data=>{if(data?.files?.length)setAssets(dedupeDriveImages(data.files))}).catch(()=>{})},[]);
   useEffect(()=>{const timer=setInterval(()=>setSlide(value=>(value+1)%orderedCarousel.length),5500);return()=>clearInterval(timer)},[orderedCarousel.length]);
   useEffect(()=>setVisible(36),[filter]);
   const move=(direction)=>setSlide(value=>(value+direction+orderedCarousel.length)%orderedCarousel.length);
@@ -31,7 +31,7 @@ export default function GalleryArchive(){
         <div className="story-rail">{orderedCarousel.map((item,index)=><button className={index===slide?'active':''} key={item.id} onClick={()=>setSlide(index)} aria-label={`Show ${item.title}`}><img loading="lazy" src={driveImageUrl(item.id,400)} alt=""/><span>{String(index+1).padStart(2,'0')}</span></button>)}</div>
       </div>
 
-      <div className="gallery-index-head"><div><span>THE COMPLETE IMAGE INDEX</span><p>Every image currently supplied in the ZAFE Drive is available here.</p></div><div className="gallery-filters">{['ALL','PROCESS','CAROUSEL','CAMPAIGN','EXTENDED'].map(type=><button className={filter===type?'active':''} onClick={()=>setFilter(type)} key={type}>{type}<small>{type==='ALL'?assets.length:assets.filter(item=>categoryOf(item)===type).length}</small></button>)}</div></div>
+      <div className="gallery-index-head"><div><span>THE COMPLETE IMAGE INDEX</span><p>Every unique image currently supplied in the ZAFE Drive is available here; filename duplicates are collapsed.</p></div><div className="gallery-filters">{['ALL','PROCESS','CAROUSEL','CAMPAIGN','EXTENDED'].map(type=><button className={filter===type?'active':''} onClick={()=>setFilter(type)} key={type}>{type}<small>{type==='ALL'?assets.length:assets.filter(item=>categoryOf(item)===type).length}</small></button>)}</div></div>
       <div className="archive-masonry">{filtered.slice(0,visible).map((item,index)=><button className={`archive-photo photo-${index%7}`} key={item.id} onClick={()=>setOpen(item)}><img loading="lazy" src={driveImageUrl(item.id,900)} alt={`ZAFE archive: ${item.title}`}/><span><b>{String(index+1).padStart(3,'0')}</b>{item.title.replace('Copy of ','')}<Maximize2 size={13}/></span></button>)}</div>
       {visible<filtered.length&&<button className="load-archive" onClick={()=>setVisible(count=>Math.min(count+36,filtered.length))}>LOAD 36 MORE <span>{visible} / {filtered.length}</span></button>}
     </section>

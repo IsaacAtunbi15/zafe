@@ -1150,5 +1150,14 @@ export const driveImageUrl=(id,size=1600)=>`https://drive.google.com/thumbnail?i
 
 export const carouselAssets=driveGallery.filter(({title})=>/^(ZAFE-CAROUSEL|ZAFE |Z\d|C\d)/i.test(title));
 export const processPhotos=driveGallery.filter(({title})=>/GRADE/i.test(title)&&!/Copy of/i.test(title));
-export const fullPhotoArchive=driveGallery.filter(({type})=>type?.startsWith('image/'));
-
+const canonicalImageName=(title='')=>title.replace(/^Copy of /i,'').replace(/-1(?=\.[^.]+$)/,'').trim().toLowerCase();
+export const dedupeDriveImages=(items=[])=>{
+  const unique=new Map();
+  for(const item of items){
+    const key=canonicalImageName(item.title||item.name);
+    const existing=unique.get(key);
+    if(!existing||(/^Copy of /i.test(existing.title||existing.name)&&!/^Copy of /i.test(item.title||item.name)))unique.set(key,item);
+  }
+  return [...unique.values()];
+};
+export const fullPhotoArchive=dedupeDriveImages(driveGallery.filter(({type})=>type?.startsWith('image/')));

@@ -21,7 +21,15 @@ export default async()=>{
       files.push(...(data.files||[]).filter(file=>file.mimeType?.startsWith('image/')).map(file=>({id:file.id,title:file.name,type:file.mimeType,createdTime:file.createdTime,modifiedTime:file.modifiedTime,size:file.size})));
       pageToken=data.nextPageToken||'';
     }while(pageToken);
-    return new Response(JSON.stringify({files,count:files.length,source:'google-drive'}),{headers:{'content-type':'application/json','cache-control':'public, max-age=300, s-maxage=900'}});
+    const canonical=name=>name.replace(/^Copy of /i,'').replace(/-1(?=\.[^.]+$)/,'').trim().toLowerCase();
+    const unique=new Map();
+    for(const file of files){
+      const key=canonical(file.title);
+      const existing=unique.get(key);
+      if(!existing||(/^Copy of /i.test(existing.title)&&!/^Copy of /i.test(file.title)))unique.set(key,file);
+    }
+    const deduplicated=[...unique.values()];
+    return new Response(JSON.stringify({files:deduplicated,count:deduplicated.length,duplicatesRemoved:files.length-deduplicated.length,source:'google-drive'}),{headers:{'content-type':'application/json','cache-control':'public, max-age=300, s-maxage=900'}});
   }catch(error){
     return new Response(JSON.stringify({error:error.message}),{status:502,headers:{'content-type':'application/json'}});
   }
