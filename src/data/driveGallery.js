@@ -1146,7 +1146,7 @@ export const driveGallery = [
   }
 ];
 
-export const driveImageUrl=(id,size=1600)=>`https://drive.google.com/thumbnail?id=${id}&sz=w${size}`;
+export const driveImageUrl=(id,size=1600)=>`https://lh3.googleusercontent.com/d/${id}=w${size}`;
 
 export const carouselAssets=driveGallery.filter(({title})=>/^(ZAFE-CAROUSEL|ZAFE |Z\d|C\d)/i.test(title));
 export const processPhotos=driveGallery.filter(({title})=>/GRADE/i.test(title)&&!/Copy of/i.test(title));
