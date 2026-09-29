@@ -5,18 +5,33 @@ import {supabase} from './lib/supabase';
 import AuthPanel from './components/AuthPanel';
 import DocumentationDesk from './components/DocumentationDesk';
 import SignupPage from './components/SignupPage';
+import DriveVideo from './components/DriveVideo';
 import heroImage from './assets/zafe-hero-zaria.png';
 import './styles.css';
+import './drive.css';
 
+const driveImage=(id)=>`https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+const driveImages=[
+ '1D6TzdYjKAmMhvOnMQ_NrnLMmk179WADg','1F28mRfmBB_aCiKfiulJvTmq6K19W-yXE',
+ '1b-CHz_ODDJdpa8VC5kmQQUGL8xG5whwi','1ExPtVhPBrtl7t3ZqOeuAvetlFGwj5_ui',
+ '1bheGKKeZXXq3UNLYX-9MCMmM_fPDbYTI','1cdGtH7hNjcIYkoP7R9TUYbPR7RHo4xKi',
+ '1pXZJhAH-MGxWfS-d7gZs4F8yF1Tej2DQ','1pye8zmaI9s3K0PI8Jsw18E1BSNvnTX6A',
+ '1I-9uAwQ4QDGXH-wb5BDAVDFAH2DGysFe','1lkTSYicNLPmrgYNLf51CP0rPZElaeNap',
+ '17G2AU9i-M7JCAFAPNt_84EvAwmk3uaGv','1SLgNJvz8UwXx2rgrjECPLORpXDYXPRdj'
+].map(driveImage);
+const driveVideos=[
+ {id:'1G1_lKiW9mbrJQV80gFsoechGioTkDVl7',title:'ZAFE field film / IMG_1083'},
+ {id:'1Q8qpf0p-jJbKhifPyhITClcC6-L4WL6p',title:'ZAFE field voice / vo'}
+];
 const fallbackRecords=[
- {archive_id:'ZAFE-2026-PH-00017',type:'IMAGE',title:'The knowledge sits in the hand',place:'Zaria City',practice:'Embroidery',date:'12 MAY 2026',image:heroImage},
- {archive_id:'ZAFE-2026-OH-00008',type:'VOICE',title:'A city carried in many voices',place:'Tudun Wada',practice:'Oral tradition',date:'18 MAY 2026',quote:'Memory is not behind us. It walks beside us.',image:heroImage},
- {archive_id:'ZAFE-2026-CR-00023',type:'CRAFT',title:'Gold thread / green cloth',place:'Zaria City',practice:'Embroidery',date:'22 MAY 2026',image:heroImage},
- {archive_id:'ZAFE-2026-FM-00004',type:'FILM',title:'Thresholds of Zaria',place:'Zaria City',practice:'Architecture',date:'02 JUN 2026',image:heroImage},
- {archive_id:'ZAFE-2026-TX-00011',type:'TEXT',title:'Notes on inheritance',place:'Samaru',practice:'Research',date:'05 JUN 2026',quote:'A pattern is also an instruction for remembering.',image:heroImage},
- {archive_id:'ZAFE-2026-PP-00006',type:'PEOPLE',title:'The maker and the measure',place:'Sabon Gari',practice:'Cap making',date:'11 JUN 2026',image:heroImage},
- {archive_id:'ZAFE-2026-PL-00003',type:'PLACE',title:'A doorway records the weather',place:'Zaria City',practice:'Architecture',date:'16 JUN 2026',image:heroImage},
- {archive_id:'ZAFE-2026-AU-00009',type:'VOICE',title:'Before the first stitch',place:'Tudun Wada',practice:'Embroidery',date:'21 JUN 2026',quote:'First you learn to watch. Then the hand begins.',image:heroImage},
+ {archive_id:'ZAFE-2026-PH-00017',type:'IMAGE',title:'The knowledge sits in the hand',place:'Zaria City',practice:'Embroidery',date:'12 MAY 2026',image:driveImages[0]},
+ {archive_id:'ZAFE-2026-OH-00008',type:'VOICE',title:'A city carried in many voices',place:'Tudun Wada',practice:'Oral tradition',date:'18 MAY 2026',quote:'Memory is not behind us. It walks beside us.',image:driveImages[1]},
+ {archive_id:'ZAFE-2026-CR-00023',type:'CRAFT',title:'Gold thread / green cloth',place:'Zaria City',practice:'Embroidery',date:'22 MAY 2026',image:driveImages[2]},
+ {archive_id:'ZAFE-2026-FM-00004',type:'FILM',title:'Thresholds of Zaria',place:'Zaria City',practice:'Architecture',date:'02 JUN 2026',image:driveImages[3]},
+ {archive_id:'ZAFE-2026-TX-00011',type:'TEXT',title:'Notes on inheritance',place:'Samaru',practice:'Research',date:'05 JUN 2026',quote:'A pattern is also an instruction for remembering.',image:driveImages[4]},
+ {archive_id:'ZAFE-2026-PP-00006',type:'PEOPLE',title:'The maker and the measure',place:'Sabon Gari',practice:'Cap making',date:'11 JUN 2026',image:driveImages[5]},
+ {archive_id:'ZAFE-2026-PL-00003',type:'PLACE',title:'A doorway records the weather',place:'Zaria City',practice:'Architecture',date:'16 JUN 2026',image:driveImages[6]},
+ {archive_id:'ZAFE-2026-AU-00009',type:'VOICE',title:'Before the first stitch',place:'Tudun Wada',practice:'Embroidery',date:'21 JUN 2026',quote:'First you learn to watch. Then the hand begins.',image:driveImages[7]},
 ];
 const crafts=['Embroidery','Weaving','Leatherwork','Dyeing','Pottery','Blacksmithing','Cap making'];
 const programme=[['02:00','Arrival / exhibition viewing'],['03:00','Keynote: The work of remembering'],['03:45','ZAFE documentary premiere'],['04:30','Panel: Making identity visible'],['05:15','Heritage fashion presentation']];
@@ -41,7 +56,7 @@ function App(){
   <section className="archive-scene" id="archive"><div className="ghost" aria-hidden="true">ZAFE</div><div className="archive-heading"><div><p className="scene-index">04 / MEMORY MODE</p><h2>The ZAFE<br/><em>Archive</em></h2></div><div className="archive-count"><strong>184</strong><span>CATALOGUED RECORDS</span></div></div><div className="archive-tools"><label><Search size={16}/><input value={archiveQuery} onChange={e=>setArchiveQuery(e.target.value)} placeholder="Search title, ID, place or practice"/></label><span>{shownRecords.length} RECORDS SHOWN</span></div><div className="archive-types"><button className={archiveType==='ALL'?'active':''} onClick={()=>setArchiveType('ALL')}><Node/>ALL</button>{['IMAGE','FILM','VOICE','TEXT','PEOPLE','PLACE'].map(x=><button className={archiveType===x?'active':''} key={x} onClick={()=>setArchiveType(x)}><Node/>{x}</button>)}</div><div className="archive-layout"><div className="contact-sheet" id="records">{shownRecords.map((r,i)=><article key={r.archive_id} className={`${i===0?'sheet-item featured':'sheet-item'} ${r.quote?'text-record':''}`} onClick={()=>setSelected(r)}>{r.quote?<blockquote>“{r.quote}”<cite>{r.archive_id}</cite></blockquote>:<figure><img src={r.image} alt=""/><span>{String(i+1).padStart(2,'0')}</span><b>{r.type}</b></figure>}<div><small>{r.archive_id}</small><h3>{r.title}</h3><dl><div><dt>PLACE</dt><dd>{r.place||'Zaria'}</dd></div><div><dt>PRACTICE</dt><dd>{r.practice||'Documentation'}</dd></div><div><dt>DATE</dt><dd>{r.date||'2026'}</dd></div></dl><button><Node/> OPEN CATALOGUE RECORD</button></div></article>)}</div><aside className={`archive-preview ${selected?'open':''}`}>{selected?<><button className="preview-close" onClick={()=>setSelected(null)}>CLOSE ×</button><small>{selected.archive_id}</small><figure><img src={selected.image} alt=""/></figure><p>{selected.type} · {selected.date||'2026'}</p><h3>{selected.title}</h3><dl><dt>PLACE</dt><dd>{selected.place}</dd><dt>PRACTICE</dt><dd>{selected.practice||'Documentation'}</dd></dl><a href={`/records/${selected.archive_id}`}><Node/> VIEW FULL RECORD <ArrowUpRight size={14}/></a></>:<><Node/><p>SELECT A RECORD TO OPEN THE ARCHIVAL PREVIEW.</p></>}</aside></div><a className="structural-link" href="/archive">ENTER THE FULL ARCHIVE <ArrowUpRight size={16}/></a></section>
   <section className="craft-scene"><p className="scene-index">05 / PRACTICE-DRIVEN NAVIGATION</p><h2>Craft index</h2><div className="craft-list">{crafts.map((c,i)=><a href={`/archive?practice=${c.toLowerCase()}`} key={c}><span>0{i+1}</span><strong>{c}</strong><i/><Node/></a>)}</div></section>
   <section className="interpretation"><div className="interpretation-copy"><p className="scene-index">06 / CONTEMPORARY INTERPRETATION</p><h2>Inheritance<br/>is not <em>still.</em></h2><div className="lineage"><span>HERITAGE</span><i/><Node/><span>MATERIAL</span><i/><Node/><span>INTERPRETATION</span></div></div><figure><img src={heroImage} alt="Contemporary green textile rooted in Zaria embroidery practice"/><figcaption>SOURCE PRACTICE / EMBROIDERY · MATERIAL / THREAD · PLACE / ZARIA</figcaption></figure></section>
-  <section className="field-scene" id="stories"><div className="scene-label"><Node/> FROM THE FIELD <b>RESEARCH IN PROGRESS</b></div><div className="field-grid">{[1,2,3,4,5,6].map((n)=><figure key={n}><img src={heroImage} alt=""/><span>{String(n).padStart(2,'0')}</span></figure>)}</div><aside><small>FIELD NOTE / 08.2026</small><blockquote>Observe the threshold. Record the hand. Ask where the pattern began.</blockquote><p>ZARIA CITY · INTERVIEW TRANSCRIPTION 62%</p></aside></section>
+  <section className="field-scene" id="stories"><div className="scene-label"><Node/> FROM THE FIELD <b>RESEARCH IN PROGRESS</b></div><div className="field-grid">{driveImages.slice(0,6).map((image,i)=><figure key={image}><img src={image} alt={`ZAFE field image ${i+1}`}/><span>{String(i+1).padStart(2,'0')}</span></figure>)}</div><aside><small>FIELD NOTE / 08.2026</small><blockquote>Observe the threshold. Record the hand. Ask where the pattern began.</blockquote><p>ZARIA CITY · INTERVIEW TRANSCRIPTION 62%</p></aside><div className="drive-film"><div><small>DIRECT FROM THE ZAFE DRIVE</small><h3>Moving memory</h3><p>Field footage is streamed from the archive’s video folder, with no duplicate upload to the website.</p></div><DriveVideo fileId={driveVideos[0].id} title={driveVideos[0].title}/></div></section>
   <section className="programme" id="edition"><p className="scene-index">07 / ZAFE 2026 PROGRAMME</p><h2>A day along<br/><em>the thread.</em></h2><div className="timeline">{programme.map(([time,title])=><div className="time" key={time}><span>{time}</span><Node/><strong>{title}</strong></div>)}</div></section>
   <section className="closing" id="about"><div className="closing-thread" aria-hidden="true"><i/><Node/><i/></div><p>ZARIA ART & FASHION EXPO</p><h2>Research.<br/><em>Remember.</em><br/>Reimagine.</h2><span>Culture survives when it is documented, practised and passed on.</span></section>
  </main><footer><div className="brand"><span className="mark">Z</span><span>ZAFE<small>ZARIA ART & FASHION EXPO</small></span></div><div>AHMADU BELLO UNIVERSITY · ZARIA · 2026</div><a href="#top">BACK TO TOP ↑</a></footer></div>{auth&&<AuthPanel onClose={()=>setAuth(false)}/>}</>;
