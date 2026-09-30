@@ -1,4 +1,4 @@
-.visual-archive{padding:92px 6vw 105px;background:#e7dfcf;color:var(--ink);position:relative}
+.visual-archive{padding:92px 6vw 105px;background:#e7dfcf;color:var(--ink);position:relative;opacity:1;transform:none}.visual-archive.reveal{opacity:1;transform:none;transition:none}
 .visual-archive-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:48px;border-bottom:1px solid rgba(71,57,35,.3);padding-bottom:28px}
 .visual-archive-head p,.gallery-tally span,.gallery-tally small,.story-copy>span,.gallery-index-head span{font:9px var(--mono);letter-spacing:.11em}
 .visual-archive-head h2{font:500 clamp(58px,8vw,118px)/.8 var(--serif);letter-spacing:-.05em;margin:24px 0 0}.visual-archive-head h2 em{color:var(--green)}
