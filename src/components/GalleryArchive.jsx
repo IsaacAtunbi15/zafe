@@ -17,7 +17,7 @@ export default function GalleryArchive(){
   const [open,setOpen]=useState(null);
   const orderedCarousel=useMemo(()=>assets.filter(({title})=>/^(ZAFE-CAROUSEL|ZAFE |Z\d|C\d)/i.test(title)).sort((a,b)=>a.title.localeCompare(b.title,undefined,{numeric:true})),[assets]);
   const filtered=useMemo(()=>assets.filter(item=>filter==='ALL'||categoryOf(item)===filter),[filter,assets]);
-  useEffect(()=>{fetch('/.netlify/functions/drive-gallery').then(response=>response.ok?response.json():null).then(data=>{if(data?.files?.length)setAssets(dedupeDriveImages(data.files))}).catch(()=>{})},[]);
+  useEffect(()=>{fetch('/api/drive-gallery').then(response=>response.ok?response.json():null).then(data=>{if(data?.files?.length)setAssets(dedupeDriveImages(data.files))}).catch(()=>{})},[]);
   useEffect(()=>{const timer=setInterval(()=>setSlide(value=>(value+1)%orderedCarousel.length),5500);return()=>clearInterval(timer)},[orderedCarousel.length]);
   useEffect(()=>setVisible(24),[filter]);
   const move=(direction)=>setSlide(value=>(value+direction+orderedCarousel.length)%orderedCarousel.length);
